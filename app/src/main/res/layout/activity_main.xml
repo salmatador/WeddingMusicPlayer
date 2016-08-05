@@ -78,15 +78,6 @@
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Fade BWD"
-            android:id="@+id/fade_bwd_btn"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:layout_weight="1"/>
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:text="Fade Stop"
             android:id="@+id/fade_stop_btn"
             android:layout_weight="1"/>

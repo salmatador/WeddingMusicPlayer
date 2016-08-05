@@ -23,59 +23,53 @@ public class MainActivity extends AppCompatActivity {
 
     MusicManager mMusicManager;
     int mSongTracker = 3;
-    private String[] mSongStrings = {GIVE_UP,OPEN_DOOR,IMPERIAL_MARCH,SEE_YOU_AGAIN};
-    private final int[] SONG_ID = new int[]{R.raw.see_you_again,R.raw.the_imperial_march, R.raw.love_is_an_open_door, R.raw.i_wont_give_up};
+    private String[] mSongStrings = {GIVE_UP, OPEN_DOOR, IMPERIAL_MARCH, SEE_YOU_AGAIN};
+    private final int[] SONG_ID = new int[]{R.raw.see_you_again, R.raw.the_imperial_march, R.raw.love_is_an_open_door, R.raw.i_wont_give_up};
     private int NumberOfSongs = 4;
+    MusicController mc;
+    private boolean allStop = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mMusicManager = new MusicManager(this);
+        mc = new MusicController(this, SONG_ID);
+        //mMusicManager = new MusicManager(this);
         //mMusicManager.setTracks(loadMusicFiles());
 
-        mFwdBtn = (Button)findViewById(R.id.fade_fwd_btn);
+        mFwdBtn = (Button) findViewById(R.id.fade_fwd_btn);
         mFwdBtn.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                mMusicManager.stopCurrentTrack(mSongStrings[mSongTracker]);
+                mc.play(mSongTracker);
                 mSongTracker = (mSongTracker + 1) % NumberOfSongs;
-                mMusicManager.playNextTrack(mSongStrings[mSongTracker],SONG_ID[mSongTracker]);
-
-                //Log.d("SONG TRACKER FWD", mSongTracker + "");
-
             }
         });
-        mStpBtn = (Button)findViewById(R.id.fade_stop_btn);
+        mStpBtn = (Button) findViewById(R.id.fade_stop_btn);
         mStpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMusicManager.playStopTrack();
+                mc.stop((mSongTracker - 1 >= 0) ? mSongTracker : SONG_ID.length - 1);
             }
         });
-        mBwdBtn = (Button)findViewById(R.id.fade_bwd_btn);
-        mBwdBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mMusicManager.stopCurrentTrack(mSongStrings[mSongTracker]);
-                mSongTracker = (((mSongTracker - 1 > 0) ? mSongTracker : NumberOfSongs) - 1) % NumberOfSongs;
-                mMusicManager.playNextTrack(mSongStrings[mSongTracker],SONG_ID[mSongTracker]);
-
-                //Log.d("SONG TRACKER BWD", mSongTracker + "");
-
-            }
-        });
+//        mBwdBtn = (Button) findViewById(R.id.fade_bwd_btn);
+//        mBwdBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mc.play(mSongTracker);
+//                mSongTracker = (mSongTracker - 1 >= 0) ? (mSongTracker - 1) : NumberOfSongs - 1;
+//            }
+//        });
     }
 
-    private HashMap<String, InputStream> loadMusicFiles(){
-    HashMap<String, InputStream> temp = new HashMap<>();
-        for(String fileName : mSongStrings) {
+    private HashMap<String, InputStream> loadMusicFiles() {
+        HashMap<String, InputStream> temp = new HashMap<>();
+        for (String fileName : mSongStrings) {
             try {
                 temp.put(fileName, getAssets().open(fileName));
             } catch (IOException e) {
-                Toast.makeText(this,"Error Loading..." + fileName,Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Error Loading..." + fileName, Toast.LENGTH_LONG).show();
             }
         }
         return temp;
