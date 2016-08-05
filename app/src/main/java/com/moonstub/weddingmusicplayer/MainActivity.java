@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     MusicManager mMusicManager;
     int mSongTracker = 3;
     private String[] mSongStrings = {GIVE_UP,OPEN_DOOR,IMPERIAL_MARCH,SEE_YOU_AGAIN};
-    private final int[] SONG_ID = new int[]{R.raw.i_wont_give_up, R.raw.love_is_an_open_door, R.raw.the_imperial_march, R.raw.see_you_again};
+    private final int[] SONG_ID = new int[]{R.raw.see_you_again,R.raw.the_imperial_march, R.raw.love_is_an_open_door, R.raw.i_wont_give_up};
     private int NumberOfSongs = 4;
 
     @Override

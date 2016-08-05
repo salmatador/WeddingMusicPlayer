@@ -14,7 +14,7 @@ import java.util.HashMap;
  * Created by mkline on 8/4/2016.
  */
 public class MusicManager {
-
+    //TODO TURN CROSS-FADE INTO AN ASYNC TASK
     //SONGS
     private static final int GIVE_UP = 0;
     private static final int OPEN_DOOR = 1;
@@ -27,6 +27,7 @@ public class MusicManager {
     AudioManager mAudioManager;
     private HashMap<String, MediaPlayer> mTracks;
     private boolean turn = true;
+    private long ms = 500;
 
     public MusicManager(MainActivity mainActivity) {
         main = mainActivity;
@@ -38,14 +39,17 @@ public class MusicManager {
     }
 
     public void playNextTrack(String s, int raw) {
-        MediaPlayer temp;
-        if (turn) {
-            mp = MediaPlayer.create(main, raw, null, AudioManager.AUDIO_SESSION_ID_GENERATE);
-            mp.start();
-        } else {
-            mMediaPlayer = MediaPlayer.create(main, raw, null, AudioManager.AUDIO_SESSION_ID_GENERATE);
-            mMediaPlayer.start();
+        //MediaPlayer temp = mMediaPlayer.selectTrack(mMediaPlayer.getAudioSessionId());
+//        if (turn) {
+//            //mp = MediaPlayer.create(main, raw, null, AudioManager.AUDIO_SESSION_ID_GENERATE);
+//            //mp.start();
+//        } else {
+        if (mMediaPlayer != null) {
+            mp = mMediaPlayer;
         }
+        mMediaPlayer = MediaPlayer.create(main, raw, null, AudioManager.AUDIO_SESSION_ID_GENERATE);
+        mMediaPlayer.start();
+        //}
 
 
         turn = !turn;
@@ -53,15 +57,9 @@ public class MusicManager {
     }
 
     public void playStopTrack() {
-//        if (mTracks.get(GIVE_UP).isPlaying()) {
-//            mTracks.get(GIVE_UP).stop();
-//        } else if (mTracks.get(OPEN_DOOR).isPlaying()) {
-//            mTracks.get(OPEN_DOOR).stop();
-//        } else if (mTracks.get(IMPERIAL_MARCH).isPlaying()) {
-//            mTracks.get(IMPERIAL_MARCH).stop();
-//        } else if (mTracks.get(SEE_YOU_AGAIN).isPlaying()) {
-//            mTracks.get(SEE_YOU_AGAIN).stop();
-//        }
+        mp = mMediaPlayer;
+        ms = 1000;
+        stopCurrentTrack("NULL");
     }
 
     public void playPreviousTrack(int songTracker) {
@@ -76,61 +74,35 @@ public class MusicManager {
 
     public void stopCurrentTrack(String v) {
 
-        if (mp != null && mp.isPlaying()) {
-            Log.e("SD be calling a thread", "Why not");
-            final Handler handler = new Handler();
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while (mpSoundIndex[0] > 0) {
-                        try {
-                            Thread.sleep(1000000000);
-                            handler.post(this);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        Log.e("Volume level", mpSoundIndex[0] + "");
-                        mpSoundIndex[0] -= .1;
-                        mp.setVolume(mpSoundIndex[0], mpSoundIndex[0]);
-
-                        if (mpSoundIndex[0] <= 0) {
-
-                            mp.reset();
-                        }
-                    }
-                    mpSoundIndex[0] = 1.0f;
-                }
-            });
-
-            t.start();
-
-
-        } else if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
+        if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
             final Handler handler2 = new Handler();
 
-            Thread tt = new Thread(new Runnable() {
+            Runnable tt = new Runnable() {
                 @Override
                 public void run() {
-                    Log.e("GOT THIS FAR","CRAP");
                     while (mpSoundIndex[1] > 0) {
                         try {
-                            Thread.sleep(100000);
-                            handler2.post(this);
+                            Thread.yield();
+                            Thread.sleep(ms);
+                            //handler2.post(this);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                         Log.e("Volume level", mpSoundIndex[1] + "");
                         mpSoundIndex[1] -= .1;
-                        mMediaPlayer.setVolume(mpSoundIndex[1], mpSoundIndex[1]);
+                        mp.setVolume(mpSoundIndex[1], mpSoundIndex[1]);
                         if (mpSoundIndex[1] <= 0) {
 
-                            mMediaPlayer.reset(12);
+                            mp.reset();
                         }
                     }
                     mpSoundIndex[1] = 1.0f;
+
                 }
-            });
-            tt.start();
+            };
+            handler2.post(tt);
+
+
         }
     }
 }
