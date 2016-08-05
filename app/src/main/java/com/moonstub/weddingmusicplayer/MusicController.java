@@ -1,17 +1,8 @@
 package com.moonstub.weddingmusicplayer;
 
 import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.media.AudioTrack;
 import android.media.MediaPlayer;
-import android.os.AsyncTask;
 import android.os.Handler;
-import android.provider.MediaStore;
-import android.provider.Settings;
-import android.support.annotation.Nullable;
-import android.util.Log;
-
-import java.io.IOException;
 
 /**
  * Created by mkline on 8/5/2016.
@@ -19,21 +10,12 @@ import java.io.IOException;
 public class MusicController {
 
     MainActivity mMain;
-    AudioTrack testTracks[];
     MediaPlayer[] mMediaPlayers = new MediaPlayer[4];
-    MediaPlayer mCurrent = null;
-    MediaPlayer mNext = null;
     int[] mSongs;
-    float volume = 1.0f;
 
     public MusicController(MainActivity main, int songs[]) {
         mMain = main;
         mSongs = songs;
-        //for (int i = 0; i < 4; i++) {
-        //    mMediaPlayers[i] = new MediaPlayer();
-//            mMediaPlayers[i] = MediaPlayer.create(mMain, mSongs[i], null, i);
-//            mMediaPlayers[i].setVolume(1f, 1f);
-        //}
     }
 
     public void stop(int song) {
@@ -59,7 +41,7 @@ public class MusicController {
             if (mMediaPlayers[index] != null && mMediaPlayers[index].isPlaying()) {
                 fadeOut(mMediaPlayers[index]);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             //Dont Care;
         }
     }
@@ -83,7 +65,7 @@ public class MusicController {
                 if (time > 0) {
                     handle.postDelayed(this, 100);
                 } else {
-                    Log.e("Stopped Player", mediaPlayer.toString());
+                    // Log.e("Stopped Player", mediaPlayer.toString());
                     mediaPlayer.stop();
                     mediaPlayer.reset();
                     mediaPlayer.release();
@@ -105,9 +87,9 @@ public class MusicController {
 
             @Override
             public void run() {
-                Log.e("SONG", "  " + volume);
+                //Log.e("SONG", "  " + volume);
                 if (!mediaPlayer.isPlaying()) {
-                    Log.e("Started Player", mediaPlayer.toString());
+                    //   Log.e("Started Player", mediaPlayer.toString());
                     mediaPlayer.start();
                 }
                 time += 100;
@@ -121,44 +103,4 @@ public class MusicController {
 
         }, 100);
     }
-
-    private class FadeOutMusic extends AsyncTask<MediaPlayer, Integer, MediaPlayer> {
-
-        private static final long CROSS_FADE_TIME = 5000;
-
-        @Override
-        protected MediaPlayer doInBackground(MediaPlayer... params) {
-            MediaPlayer currentPlayer = params[0];
-            while (volume >= 0) {
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                volume -= .1;
-                Log.e("Volume", volume + "");
-                currentPlayer.setVolume(volume, volume);
-            }
-            currentPlayer.setVolume(0f, 0f);
-            currentPlayer.pause();
-            currentPlayer.reset();
-            currentPlayer.release();
-            volume = 1.0f;
-            return currentPlayer;
-        }
-
-        @Override
-        protected void onPostExecute(MediaPlayer c) {
-            if (c == mCurrent) {
-                mCurrent = null;
-            } else {
-                mNext = null;
-            }
-            // mCurrent = mNext;
-            //mNext = null;
-            //super.onPostExecute(integer);
-        }
-    }
-
 }
